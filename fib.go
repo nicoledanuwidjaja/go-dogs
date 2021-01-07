@@ -3,26 +3,23 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
+	"strconv"
 
-	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
-const serviceName = "dd-server"
+const serviceName = "dd-fib"
 const agentAddr = "127.0.0.1:8126"
 const debug = true
+const depth = 4
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World!\n"))
-}
-
-func startServer(ctx context.Context) {
-	s, ctx := tracer.StartSpanFromContext(ctx, "Server starting")
-	mux := muxtrace.NewRouter()
-	mux.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", mux)
-	s.Finish()
+func fib(ctx context.Context, n int) int {
+	s, ctx := tracer.StartSpanFromContext(ctx, "fib("+strconv.Itoa(n)+")")
+	defer s.Finish()
+	if n <= 2 {
+		return 1
+	}
+	return fib(ctx, n-1) + fib(ctx, n-2)
 }
 
 func main() {
@@ -34,9 +31,10 @@ func main() {
 		tracer.WithDebugMode(debug),
 	)
 	defer tracer.Stop()
-	s, ctx := tracer.StartSpanFromContext(context.Background(), serviceName+".opname", tracer.ResourceName(serviceName+".resname"))
-	startServer(ctx)
-	s.Finish()
-	log.Printf("Server ran!")
 
+	// returns new span as parent
+	s, ctx := tracer.StartSpanFromContext(context.Background(), serviceName+".opname", tracer.ResourceName(serviceName+".resname"))
+	fibn := fib(ctx, depth)
+	s.Finish()
+	log.Printf("fib(%d) = %d", depth, fibn)
 }
