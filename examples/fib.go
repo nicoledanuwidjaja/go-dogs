@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/ext"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
@@ -14,7 +15,7 @@ const debug = true
 const depth = 4
 
 func fib(ctx context.Context, n int) int {
-	s, ctx := tracer.StartSpanFromContext(ctx, "fib("+strconv.Itoa(n)+")")
+	s, ctx := tracer.StartSpanFromContext(ctx, "fib("+strconv.Itoa(n)+")", tracer.Tag(ext.SamplingPriority, 2))
 	defer s.Finish()
 	if n <= 2 {
 		return 1
