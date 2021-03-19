@@ -24,6 +24,10 @@ func main() {
 	// Chaining
 	b.Set(10).Set(11)
 
+	if b.Test(uint(10)) {
+		fmt.Println("AHHHHHH")
+	}
+
 	for i, e := b.NextSet(0); e; i, e = b.NextSet(i + 1) {
 		fmt.Println("The following bit is set:", i)
 	}
@@ -32,4 +36,5 @@ func main() {
 	} else {
 		fmt.Println("Intersection doesn't work???")
 	}
+	fmt.Println(b.String())
 }

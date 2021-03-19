@@ -1,0 +1,10 @@
+goos: darwin
+goarch: amd64
+BenchmarkFind599-8   	16075600	        75.1 ns/op
+BenchmarkFind499-8   	26923591	        44.2 ns/op
+BenchmarkFind400-8   	209507880	         5.72 ns/op
+BenchmarkFind500-8   	27577068	        43.5 ns/op
+BenchmarkFind600-8   	15944653	        75.2 ns/op
+BenchmarkFind450-8   	40911948	        29.9 ns/op
+PASS
+ok  	_/Users/nicole.danuwidjaja/Projects/go-dogs/tests/searching	8.202s
