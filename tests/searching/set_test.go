@@ -11,42 +11,42 @@ import (
 	"sort"
 )
 
-var rr []int = parseHTTPCodeRangesOld("400-499, 500-599")
-// var rr bitset.BitSet = parseHTTPCodeRanges("400-499, 500-599")
+// var rr []int = parseHTTPCodeRangesOld("400-499, 500-599")
+var rr bitset.BitSet = parseHTTPCodeRanges("400-499, 500-599")
 
 func BenchmarkFind599(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		hasHTTPCodeErrorOld(rr, "599")
+		hasHTTPCodeError(rr, "599")
 	}
 }
 
 func BenchmarkFind499(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		hasHTTPCodeErrorOld(rr, "499")
+		hasHTTPCodeError(rr, "499")
 	}
 }
 
 func BenchmarkFind400(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		hasHTTPCodeErrorOld(rr, "400")
+		hasHTTPCodeError(rr, "400")
 	}
 }
 
 func BenchmarkFind500(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		hasHTTPCodeErrorOld(rr, "500")
+		hasHTTPCodeError(rr, "500")
 	}
 }
 
 func BenchmarkFind600(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		hasHTTPCodeErrorOld(rr, "600")
+		hasHTTPCodeError(rr, "600")
 	}
 }
 
 func BenchmarkFind450(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		hasHTTPCodeErrorOld(rr, "450")
+		hasHTTPCodeError(rr, "450")
 	}
 }
 
@@ -82,7 +82,7 @@ func parseHTTPCodeRangesOld(r string) []int {
 }
 
 // parseHTTPCodeRangesSlightlyOld parses range pairs and returns a valid slice of HTTP status codes.
-func parseHTTPCodeRangesSlightlyOld(r string) {
+func parseHTTPCodeRangesSlightlyOld(r string) []int {
 	re := regexp.MustCompile("\\d{3}(?:-\\d{3})*(?:,\\d{3}(?:-\\d{3})*)*")
 	codes := []int{}
 	for _, code := range strings.Split(r, ",") {
@@ -153,7 +153,7 @@ func appendOrdered(s []int, n int) []int {
 	return s
 }
 
-// hasHTTPCodeErrorOld checks if the bitset of HTTP codes contains a given HTTP error code.
+// hasHTTPCodeErrorOld checks if the slice of codes contains a given HTTP error code.
 func hasHTTPCodeErrorOld(b []int, c string) bool {
 	code, _ := strconv.Atoi(c)
 	for _, v := range b {

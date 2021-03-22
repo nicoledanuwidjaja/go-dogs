@@ -1,0 +1,34 @@
+goos: darwin
+goarch: amd64
+BenchmarkFind599-8   	189068575	         6.40 ns/op
+BenchmarkFind599-8   	189876669	         6.40 ns/op
+BenchmarkFind599-8   	171667864	         6.51 ns/op
+BenchmarkFind599-8   	187054693	         6.35 ns/op
+BenchmarkFind599-8   	166086328	         7.53 ns/op
+BenchmarkFind499-8   	179893921	         6.38 ns/op
+BenchmarkFind499-8   	177621022	         6.51 ns/op
+BenchmarkFind499-8   	184861261	         6.56 ns/op
+BenchmarkFind499-8   	164590077	         6.39 ns/op
+BenchmarkFind499-8   	185246970	         6.72 ns/op
+BenchmarkFind400-8   	173045371	         6.50 ns/op
+BenchmarkFind400-8   	180021966	         6.38 ns/op
+BenchmarkFind400-8   	186668845	         6.51 ns/op
+BenchmarkFind400-8   	188520399	         6.48 ns/op
+BenchmarkFind400-8   	181229247	         7.06 ns/op
+BenchmarkFind500-8   	183968868	         6.48 ns/op
+BenchmarkFind500-8   	185789442	         6.37 ns/op
+BenchmarkFind500-8   	185360395	         6.53 ns/op
+BenchmarkFind500-8   	183869151	         6.87 ns/op
+BenchmarkFind500-8   	184518747	         6.42 ns/op
+BenchmarkFind600-8   	210496888	         5.80 ns/op
+BenchmarkFind600-8   	210129482	         5.94 ns/op
+BenchmarkFind600-8   	198790275	         7.42 ns/op
+BenchmarkFind600-8   	175476138	         5.77 ns/op
+BenchmarkFind600-8   	210534285	         5.69 ns/op
+BenchmarkFind450-8   	188605791	         6.34 ns/op
+BenchmarkFind450-8   	185517399	         6.44 ns/op
+BenchmarkFind450-8   	187690039	         6.35 ns/op
+BenchmarkFind450-8   	187034709	         6.39 ns/op
+BenchmarkFind450-8   	182845089	         6.38 ns/op
+PASS
+ok  	_/Users/nicole.danuwidjaja/Projects/go-dogs/tests/searching	55.814s
