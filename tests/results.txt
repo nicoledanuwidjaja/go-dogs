@@ -1,9 +1,0 @@
-name                                 old time/op  new time/op  delta
-ParsingClient-8                       102µs ± 0%     6µs ± 0%   ~     (p=1.000 n=1+1)
-ParsingServer-8                       109µs ± 0%     7µs ± 0%   ~     (p=1.000 n=1+1)
-ParsingClientAndServer-8              200µs ± 0%    13µs ± 0%   ~     (p=1.000 n=1+1)
-ParsingFlipperooClient-8              100µs ± 0%     6µs ± 0%   ~     (p=1.000 n=1+1)
-ParsingMergeRangesClient-8            477µs ± 0%     7µs ± 0%   ~     (p=1.000 n=1+1)
-ParsingMergeRangesClientAndServer-8   955µs ± 0%    14µs ± 0%   ~     (p=1.000 n=1+1)
-ParsingFlipperooAndMergeClient-8      248µs ± 0%     7µs ± 0%   ~     (p=1.000 n=1+1)
-ParsingClientAndInvalid-8             110µs ± 0%     7µs ± 0%   ~     (p=1.000 n=1+1)

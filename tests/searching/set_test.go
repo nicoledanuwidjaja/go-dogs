@@ -8,68 +8,52 @@ import (
 	"fmt"
 	"strconv"
 	"github.com/willf/bitset"
+	"sort"
 )
 
-func BenchmarkParsingClient(b *testing.B) {
+var rr []int = parseHTTPCodeRangesOld("400-499, 500-599")
+// var rr bitset.BitSet = parseHTTPCodeRanges("400-499, 500-599")
+
+func BenchmarkFind599(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		parseHTTPCodeRanges("400-499")
+		hasHTTPCodeErrorOld(rr, "599")
 	}
 }
 
-func BenchmarkParsingServer(b *testing.B) {
+func BenchmarkFind499(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		parseHTTPCodeRanges("500-599")
+		hasHTTPCodeErrorOld(rr, "499")
 	}
 }
 
-func BenchmarkParsingClientAndServer(b *testing.B) {
+func BenchmarkFind400(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		parseHTTPCodeRanges("400-499")
-		parseHTTPCodeRanges("500-599")
+		hasHTTPCodeErrorOld(rr, "400")
 	}
 }
 
-func BenchmarkParsingFlipperooClient(b *testing.B) {
+func BenchmarkFind500(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		parseHTTPCodeRanges("499-400")
+		hasHTTPCodeErrorOld(rr, "500")
 	}
 }
 
-func BenchmarkParsingMergeRangesClient(b *testing.B) {
+func BenchmarkFind600(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		parseHTTPCodeRanges("400-499, 450-499, 400-449")
+		hasHTTPCodeErrorOld(rr, "600")
 	}
 }
 
-// heavyloading
-func BenchmarkParsingMergeRangesClientAndServer(b *testing.B) {
+func BenchmarkFind450(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		parseHTTPCodeRanges("400-499, 450-499, 400-449")
-		parseHTTPCodeRanges("500-599, 550-599, 500-549")
+		hasHTTPCodeErrorOld(rr, "450")
 	}
 }
 
-func BenchmarkParsingFlipperooAndMergeClient(b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		parseHTTPCodeRanges("499-400,400-450")
-	}
-}
-
-func BenchmarkParsingClientAndInvalid(b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		parseHTTPCodeRanges("400-499,300,1000")
-	}
-}
-
-type codeRange struct {
-	min int
-	max int
-}
-
-// parseHTTPCodeRanges parses range pairs and returns a valid slice of HTTP status codes.
-func parseHTTPCodeRanges(r string) bitset.BitSet {
+// parseHTTPCodeRangesOld parses range pairs and returns a valid slice of HTTP status codes.
+func parseHTTPCodeRangesOld(r string) []int {
 	re := regexp.MustCompile("\\d{3}(?:-\\d{3})*(?:,\\d{3}(?:-\\d{3})*)*")
-	codes := bitset.BitSet
+	codes := []int{}
 	for _, code := range strings.Split(r, ",") {
 		code = strings.TrimSpace(code)
 		if code == "" {
@@ -82,8 +66,7 @@ func parseHTTPCodeRanges(r string) bitset.BitSet {
 		rg := strings.Split(code, "-")
 		if len(rg) == 1 {
 			val, _ := strconv.Atoi(rg[0])
-			codes.Set(val)
-			// codes = appendOrdered(codes, val)
+			codes = appendOrdered(codes, val)
 		} else {
 			if rg[0] > rg[1] {
 				rg[0], rg[1] = rg[1], rg[0]
@@ -91,8 +74,69 @@ func parseHTTPCodeRanges(r string) bitset.BitSet {
 			min, _ := strconv.Atoi(rg[0])
 			max, _ := strconv.Atoi(rg[1])
 			for i := min; i <= max; i++ {
-				codes.Set(i)
-				// codes = appendOrdered(codes, i)
+				codes = appendOrdered(codes, i)
+			}
+		}
+	}
+	return codes
+}
+
+// parseHTTPCodeRangesSlightlyOld parses range pairs and returns a valid slice of HTTP status codes.
+func parseHTTPCodeRangesSlightlyOld(r string) {
+	re := regexp.MustCompile("\\d{3}(?:-\\d{3})*(?:,\\d{3}(?:-\\d{3})*)*")
+	codes := []int{}
+	for _, code := range strings.Split(r, ",") {
+		code = strings.TrimSpace(code)
+		if code == "" {
+			continue
+		}
+		if !re.MatchString(code) {
+			fmt.Println("Invalid range for: ", code)
+			continue
+		}
+		rg := strings.Split(code, "-")
+		if len(rg) == 1 {
+			val, _ := strconv.Atoi(rg[0])
+			codes = appendOrdered(codes, val)
+		} else {
+			if rg[0] > rg[1] {
+				rg[0], rg[1] = rg[1], rg[0]
+			}
+			min, _ := strconv.Atoi(rg[0])
+			max, _ := strconv.Atoi(rg[1])
+			for i := min; i <= max; i++ {
+				codes = appendOrdered(codes, i)
+			}
+		}
+	}
+	return codes
+}
+
+// parseHTTPCodeRanges parses range pairs and returns a valid slice of HTTP status codes.
+func parseHTTPCodeRanges(r string) bitset.BitSet {
+	re := regexp.MustCompile("\\d{3}(?:-\\d{3})*(?:,\\d{3}(?:-\\d{3})*)*")
+	codes := bitset.BitSet{}
+	for _, code := range strings.Split(r, ",") {
+		code = strings.TrimSpace(code)
+		if code == "" {
+			continue
+		}
+		if !re.MatchString(code) {
+			fmt.Println("Invalid range for: ", code)
+			continue
+		}
+		rg := strings.Split(code, "-")
+		if len(rg) == 1 {
+			val, _ := strconv.Atoi(rg[0])
+			codes.Set(uint(val))
+		} else {
+			if rg[0] > rg[1] {
+				rg[0], rg[1] = rg[1], rg[0]
+			}
+			min, _ := strconv.Atoi(rg[0])
+			max, _ := strconv.Atoi(rg[1])
+			for i := min; i <= max; i++ {
+				codes.Set(uint(i))
 			}
 		}
 	}
@@ -100,13 +144,28 @@ func parseHTTPCodeRanges(r string) bitset.BitSet {
 }
 
 // appendOrdered appends n to the slice s at the necessary index such that the resulting slice is kept ordered.
-func appendOrdered(codes codeRange, c int) codeRange {
-	if c < codes.min || codes.min == 0 {
-		codes.min = c
-	} 
-	
-	if c > codes.max || codes.max == 0 {
-		codes.max = c
+func appendOrdered(s []int, n int) []int {
+	sort.Ints(s)
+	i := sort.SearchInts(s, n)
+	s = append(s, 0)
+	copy(s[i+1:], s[i:])
+	s[i] = n
+	return s
+}
+
+// hasHTTPCodeErrorOld checks if the bitset of HTTP codes contains a given HTTP error code.
+func hasHTTPCodeErrorOld(b []int, c string) bool {
+	code, _ := strconv.Atoi(c)
+	for _, v := range b {
+		if v == code {
+			return true
+		}
 	}
-	return codes
+	return false
+}
+
+// hasHTTPCodeError checks if the bitset of HTTP codes contains a given HTTP error code.
+func hasHTTPCodeError(b bitset.BitSet, c string) bool {
+	code, _ := strconv.Atoi(c)
+	return b.Test(uint(code))
 }
